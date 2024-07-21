@@ -1,10 +1,18 @@
-import os
+from transformers import BertTokenizer, BertModel
 
-def join_files(output_file, part_files):
-    with open(output_file, 'wb') as outfile:
-        for part_file in part_files:
-            with open(part_file, 'rb') as infile:
-                outfile.write(infile.read())
+# Load the tokenizer and model from the local directory
+tokenizer = BertTokenizer.from_pretrained('./bert-base-uncased')
+model = BertModel.from_pretrained('./bert-base-uncased')
 
-part_files = sorted([f for f in os.listdir('.') if f.startswith('pytorch_model_part_')])
-join_files('pytorch_model.bin', part_files)
+# Example text
+text = "Using BERT model offline is straightforward."
+
+# Tokenize the input text
+inputs = tokenizer(text, return_tensors='pt')
+
+# Get the embeddings from BERT
+outputs = model(**inputs)
+
+# Extract the embeddings
+last_hidden_states = outputs.last_hidden_state
+print(last_hidden_states)
